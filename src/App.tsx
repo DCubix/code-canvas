@@ -37,6 +37,7 @@ function App() {
   const [code, setCode] = createSignal(INITIAL_CODE)
   const [error, setError] = createSignal<string | null>(null)
   const [showCheatSheet, setShowCheatSheet] = createSignal(true)
+  const [canvasSize, setCanvasSize] = createSignal(256)
   let canvas!: HTMLCanvasElement
 
   const imageCache = new Map<string, ImageData>()
@@ -55,7 +56,7 @@ function App() {
 
     if (typeof result === 'function') {
       const fn = result as PixelFn
-      const size = 256
+      const size = canvasSize()
       const imageData = render(fn, size, size)
       const ctx = canvas?.getContext('2d')
       if (ctx) ctx.putImageData(imageData, 0, 0)
@@ -130,16 +131,53 @@ function App() {
           <Editor initialCode={INITIAL_CODE} onCodeChange={onCodeChange} />
         </div>
         {/* Preview panel */}
-        <div class="flex-1 flex flex-col items-center justify-center gap-3 p-4 border-l border-neutral-700">
-          <canvas
-            ref={canvas}
-            width={256}
-            height={256}
-            class="border border-neutral-700 rounded"
-            style={{ 'image-rendering': 'pixelated' }}
-          />
+        <div class="flex-1 flex flex-col items-stretch border-l border-neutral-700">
+          {/* Toolbar */}
+          <div class="flex items-center gap-3 px-4 py-2 border-b border-neutral-700 text-xs">
+            <label class="flex items-center gap-1.5 text-neutral-400">
+              Size
+              <select
+                value={canvasSize()}
+                onChange={e => setCanvasSize(Number(e.currentTarget.value))}
+                class="bg-neutral-800 border border-neutral-600 rounded px-1.5 py-0.5 text-neutral-100 cursor-pointer"
+              >
+                <option value={64}>64 × 64</option>
+                <option value={128}>128 × 128</option>
+                <option value={256}>256 × 256</option>
+                <option value={512}>512 × 512</option>
+                <option value={1024}>1024 × 1024</option>
+              </select>
+            </label>
+            <button
+              onClick={() => {
+                const link = document.createElement('a')
+                link.download = `code-canvas-${canvasSize()}x${canvasSize()}.png`
+                link.href = canvas.toDataURL('image/png')
+                link.click()
+              }}
+              class="px-2 py-0.5 rounded border border-neutral-600 text-neutral-300 hover:text-neutral-100 hover:border-neutral-500 transition-colors cursor-pointer"
+            >
+              Save PNG
+            </button>
+          </div>
+          {/* Canvas */}
+          <div class="flex-1 flex items-center justify-center p-4">
+            <canvas
+              ref={canvas}
+              width={canvasSize()}
+              height={canvasSize()}
+              class="border border-neutral-700 rounded"
+              style={{
+                'image-rendering': 'pixelated',
+                'background-image': `linear-gradient(45deg, #222 25%, transparent 25%), linear-gradient(-45deg, #222 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #222 75%), linear-gradient(-45deg, transparent 75%, #222 75%)`,
+                'background-size': '16px 16px',
+                'background-position': '0 0, 0 8px, 8px -8px, -8px 0px',
+                'background-color': '#333',
+              }}
+            />
+          </div>
           {error() && (
-            <pre class="text-red-400 text-xs max-w-xs overflow-auto whitespace-pre-wrap">
+            <pre class="text-red-400 text-xs px-4 pb-3 max-w-xs overflow-auto whitespace-pre-wrap">
               {error()}
             </pre>
           )}

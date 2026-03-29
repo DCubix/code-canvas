@@ -596,4 +596,21 @@ export function registerBuiltins(env: Environment, images: Map<string, ImageData
             }
         }
     })
+
+    // Convert coords to polar at center (0.5, 0.5), then feed to input function
+    env.registerOp({
+        name: 'polar',
+        params: [
+            { name: 'input', type: 'pixelfn' },
+        ],
+        fn: (input: Value) => {
+            const src = toPixelFn(input)
+            return (x: number, y: number, t: number) => {
+                const cx = x - 0.5, cy = y - 0.5
+                const r = Math.sqrt(cx * cx + cy * cy)
+                const theta = Math.atan2(cy, cx) / (2 * Math.PI) + 0.5
+                return src(theta, r, t)
+            }
+        }
+    })
 }

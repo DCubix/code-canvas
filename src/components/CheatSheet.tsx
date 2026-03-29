@@ -149,6 +149,7 @@ const sections: Section[] = [
         { name: 'translate', sig: "translate dx dy input", desc: "Shift the image by dx/dy in normalized coords (0–1)." },
         { name: 'tile', sig: "tile nx ny input", desc: "Repeat the image nx times on X and ny times on Y." },
         { name: 'swirl', sig: "swirl turns input", desc: "Apply a swirl distortion. Turns controls intensity." },
+        { name: 'polar', sig: "polar input", desc: "Remap coordinates to polar (angle → x, radius → y) around center." },
         { name: 'displace', sig: "displace map amount input", desc: "Warp the image using another image as a displacement map." },
       ],
     },
