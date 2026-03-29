@@ -1,0 +1,84 @@
+@top Program { (statement terminator)* }
+
+statement {
+    Let | OpDef | Preload | expr
+}
+
+Let {
+    kw<"let"> Ident "=" expr
+}
+
+Preload {
+    kw<"preload"> String (kw<"as"> String)?
+}
+
+OpDef {
+    kw<"op"> Ident params "=" expr
+}
+
+params { Ident* }
+
+expr {
+    PipeExpr | simpleExpr
+}
+
+PipeExpr {
+    expr !pipe "|>" simpleExpr
+}
+
+simpleExpr {
+    App | atom
+}
+
+App {
+    Ident atom+
+}
+
+atom {
+    Number |
+    String |
+    Ident |
+    "(" expr ")" |
+    List |
+    ParenArith
+}
+
+List {
+    "[" listItems? "]"
+}
+
+listItems {
+    expr ("," expr)*
+}
+
+ParenArith {
+    "(" expr ArithOp expr ")"
+}
+
+ArithOp {
+    "+" | "-" | "*" | "/"
+}
+
+@tokens {
+    terminator { ";" }
+    Number { "-"? @digit+ ("." @digit+)? }
+    String { "'" (!['\\] | "\\" _)* "'" }
+    Ident { @asciiLetter (@asciiLetter | @digit | "_")* }
+    LineComment { "--" ![\n]* }
+    space { (" " | "\t" | "\n")+ }
+    @precedence {
+        LineComment, "-", Number, Ident, space
+    }
+}
+
+@skip { space | LineComment }
+
+kw<term> {
+    @specialize[@name={term}]<Ident, term>
+}
+
+@precedence {
+    pipe @left
+}
+
+@detectDelim
