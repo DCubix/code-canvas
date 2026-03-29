@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build:grammar": "lezer-generator src/lang/grammar/codecanvas.grammar -o src/lang/grammar/parser.ts",
+    "build:grammar": "lezer-generator src/lang/grammar/codecanvas.grammar -o src/lang/grammar/parser.ts && sed -i '1s/^/\\/\\/ @ts-nocheck\\n/' src/lang/grammar/parser.ts src/lang/grammar/parser.terms.ts",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
