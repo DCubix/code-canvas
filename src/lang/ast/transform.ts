@@ -21,7 +21,9 @@ function allChildren(node: SyntaxNode): SyntaxNode[] {
     const result: SyntaxNode[] = []
     let child = node.firstChild
     while (child) {
-        result.push(child)
+        if (child.name !== 'LineComment') {
+            result.push(child)
+        }
         child = child.nextSibling
     }
     return result
@@ -45,6 +47,8 @@ export function transformProgram(tree: Tree, source: string): Program {
 
 function transformStatement(node: SyntaxNode, source: string): Statement | null {
     switch (node.name) {
+        case "LineComment":
+            return null
         case "Let": {
             const ident = node.getChild("Ident")
             const expr = allChildren(node)
