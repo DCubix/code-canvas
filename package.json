@@ -28,5 +28,9 @@
     "typescript": "~5.9.3",
     "vite": "^8.0.1",
     "vite-plugin-solid": "^2.11.11"
+  },
+  "optionalDependencies": {
+    "@emnapi/core": "1.9.1",
+    "@emnapi/runtime": "1.9.1"
   }
 }
